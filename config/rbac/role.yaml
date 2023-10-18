@@ -1,0 +1,45 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - apps
+  resources:
+  - statefulsets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - orca.paermini.com
+  resources:
+  - mqttclients
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - orca.paermini.com
+  resources:
+  - mqttclients/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - orca.paermini.com
+  resources:
+  - mqttclients/status
+  verbs:
+  - get
+  - patch
+  - update

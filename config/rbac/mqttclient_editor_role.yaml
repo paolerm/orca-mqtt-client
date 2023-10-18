@@ -1,0 +1,31 @@
+# permissions for end users to edit mqttclients.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: mqttclient-editor-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: orca-mqtt-client
+    app.kubernetes.io/part-of: orca-mqtt-client
+    app.kubernetes.io/managed-by: kustomize
+  name: mqttclient-editor-role
+rules:
+- apiGroups:
+  - orca.paermini.com
+  resources:
+  - mqttclients
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - orca.paermini.com
+  resources:
+  - mqttclients/status
+  verbs:
+  - get

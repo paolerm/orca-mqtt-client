@@ -1,0 +1,12 @@
+apiVersion: orca.paermini.com/v1beta1
+kind: MqttClient
+metadata:
+  labels:
+    app.kubernetes.io/name: mqttclient
+    app.kubernetes.io/instance: mqttclient-sample
+    app.kubernetes.io/part-of: orca-mqtt-client
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: orca-mqtt-client
+  name: mqttclient-sample
+spec:
+  # TODO(user): Add fields here
