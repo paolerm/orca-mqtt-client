@@ -42,7 +42,15 @@ spec:
                       type: integer
                     clientModelId:
                       type: string
+                    maxCpuLimits:
+                      type: integer
+                    maxMemoryLimits:
+                      type: integer
                     messagePerHourPerClient:
+                      type: integer
+                    minCpuRequests:
+                      type: integer
+                    minMemoryRequests:
                       type: integer
                     publishQoS:
                       type: string

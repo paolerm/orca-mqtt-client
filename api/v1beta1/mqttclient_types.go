@@ -28,6 +28,10 @@ type ClientConfig struct {
 	MessagePerHourPerClient int      `json:"messagePerHourPerClient,omitempty"`
 	PublishTopics           []string `json:"publishTopics,omitempty"`
 	SubscribeTopics         []string `json:"subscribeTopics,omitempty"`
+	MinCpuRequests			int		 `json:"minCpuRequests,omitempty"`
+	MinMemoryRequests		int		 `json:"minMemoryRequests,omitempty"`
+	MaxCpuLimits			int		 `json:"maxCpuLimits,omitempty"`
+	MaxMemoryLimits			int		 `json:"maxMemoryLimits,omitempty"`
 }
 
 type SimulationPod struct {
