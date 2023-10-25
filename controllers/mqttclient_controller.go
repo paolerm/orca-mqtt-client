@@ -28,6 +28,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"strconv"
 
 	orcav1beta1 "github.com/paolerm/orca-mqtt-client/api/v1beta1"
 )
@@ -39,6 +40,7 @@ type MqttClientReconciler struct {
 }
 
 const mqttClientFinalizer = "paermini.com/mqtt-client-finalizer"
+const maxMqttClientPerPods = 100
 
 //+kubebuilder:rbac:groups=orca.paermini.com,resources=mqttclients,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=orca.paermini.com,resources=mqttclients/status,verbs=get;update;patch
@@ -81,6 +83,14 @@ func (r *MqttClientReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		return ctrl.Result{}, nil
 	}
 
+	// setup status section
+	mqttClient.Status = setupStatus(mqttClient.Spec)
+	err = r.Status().Update(ctx, mqttClient)
+	if err != nil {
+		logger.Error(err, "Failed to update CR!")
+		return ctrl.Result{}, err
+	}
+
 	statefulSetName := mqttClient.Spec.NamePrefix
 	existingStatefulSet := &appsv1.StatefulSet{}
 	ssNamespacedName := types.NamespacedName{
@@ -121,11 +131,10 @@ func (r *MqttClientReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 							{Name: "docker-secret"},
 							{Name: "cdpx-acr-secret"},
 						},
-						// TODO: Volumes
 						Containers: []apiv1.Container{
 							{
 								Name:            statefulSetName,
-								Image:           "paerminiacrplayground.azurecr.io/runner:orcaprod", // TODO: custom image
+								Image:           "paerminiacrplayground.azurecr.io/hello-world:latest", // TODO: custom image
 								ImagePullPolicy: "Always",
 								Env:             []apiv1.EnvVar{}, // TODO
 								// Resources: {},
@@ -205,4 +214,43 @@ func (r *MqttClientReconciler) finalizeMqttClient(ctx context.Context, req ctrl.
 
 	logger.Info("Successfully finalized")
 	return nil
+}
+
+func setupStatus(spec orcav1beta1.MqttClientSpec) orcav1beta1.MqttClientStatus {
+	// TODO calculate ConnectionLimitAllocatedPerSecond, MessageSendPerHourPerClientRequested and MessageSendPerHourPerClientAllocated
+	simulationPods := []orcav1beta1.SimulationPod{}
+
+	simulationPodId := 0
+	for i := 0; i < len(spec.ClientConfigs); i++ {
+		clientConfig := spec.ClientConfigs[i]
+
+		totalRemaining := clientConfig.ClientCount
+		for totalRemaining > 0 {
+			simulationPod := orcav1beta1.SimulationPod{
+				SimulationPodId: strconv.Itoa(simulationPodId),
+				ClientModelId:   clientConfig.ClientModelId,
+				PublishQoS:      clientConfig.PublishQoS,
+				SubscribeQoS:    clientConfig.SubscribeQoS,
+				PublishTopics:   clientConfig.PublishTopics,
+				SubscribeTopics: clientConfig.SubscribeTopics,
+			}
+
+			if totalRemaining <= maxMqttClientPerPods {
+				simulationPod.ClientCount = totalRemaining
+				totalRemaining = 0
+			} else {
+				simulationPod.ClientCount = maxMqttClientPerPods
+				totalRemaining = totalRemaining - maxMqttClientPerPods
+			}
+
+			simulationPods = append(simulationPods, simulationPod)
+			simulationPodId = simulationPodId + 1
+		}
+	}
+
+	result := orcav1beta1.MqttClientStatus{
+		SimulationPods: simulationPods,
+	}
+
+	return result
 }

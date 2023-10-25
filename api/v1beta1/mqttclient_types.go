@@ -21,24 +21,43 @@ import (
 )
 
 type ClientConfig struct {
-	InstanceCount           int      `json:"instanceCount"`
+	ClientCount             int      `json:"clientCount"`
+	ClientModelId           string   `json:"clientModelId,omitempty"`
+	PublishQoS              string   `json:"publishQoS,omitempty"`
+	SubscribeQoS            string   `json:"subscribeQoS,omitempty"`
 	MessagePerHourPerClient int      `json:"messagePerHourPerClient,omitempty"`
 	PublishTopics           []string `json:"publishTopics,omitempty"`
 	SubscribeTopics         []string `json:"subscribeTopics,omitempty"`
 }
 
+type SimulationPod struct {
+	SimulationPodId                      string   `json:"simulationPodId"`
+	ClientCount                          int      `json:"clientCount"`
+	ClientModelId                        string   `json:"clientModelId,omitempty"`
+	PublishQoS                           string   `json:"publishQoS,omitempty"`
+	SubscribeQoS                         string   `json:"subscribeQoS,omitempty"`
+	PublishTopics                        []string `json:"publishTopics,omitempty"`
+	SubscribeTopics                      []string `json:"subscribeTopics,omitempty"`
+	ConnectionLimitAllocatedPerSecond    int      `json:"connectionLimitAllocatedPerSecond,omitempty"`    // TODO float usage is highly discouraged, as support for them varies across languages. Is int ok?
+	MessageSendPerHourPerClientRequested int      `json:"messageSendPerHourPerClientRequested,omitempty"` // TODO float usage is highly discouraged, as support for them varies across languages. Is int ok?
+	MessageSendPerHourPerClientAllocated int      `json:"messageSendPerHourPerClientAllocated,omitempty"` // TODO float usage is highly discouraged, as support for them varies across languages. Is int ok?
+}
+
 // MqttClientSpec defines the desired state of MqttClient
 type MqttClientSpec struct {
-	NamePrefix    string         `json:"namePrefix"`
-	TargetType    string         `json:"targetType"`
-	Protocol      string         `json:"protocol"`
-	ClientConfigs []ClientConfig `json:"clientConfigs"`
+	NamePrefix               string         `json:"namePrefix"`
+	HostName                 string         `json:"hostName"`
+	Port                     int            `json:"port"`
+	Protocol                 string         `json:"protocol"`
+	EnableTls                bool           `json:"enableTls"`
+	ConnectionLimitPerSecond int            `json:"connectionLimitPerSecond"`
+	SendingLimitPerSecond    int            `json:"sendingLimitPerSecond"`
+	ClientConfigs            []ClientConfig `json:"clientConfigs"`
 }
 
 // MqttClientStatus defines the observed state of MqttClient
 type MqttClientStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	SimulationPods []SimulationPod `json:"simulationPods"`
 }
 
 //+kubebuilder:object:root=true

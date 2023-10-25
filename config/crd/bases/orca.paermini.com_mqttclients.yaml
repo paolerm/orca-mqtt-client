@@ -38,36 +38,89 @@ spec:
               clientConfigs:
                 items:
                   properties:
-                    instanceCount:
+                    clientCount:
                       type: integer
+                    clientModelId:
+                      type: string
                     messagePerHourPerClient:
                       type: integer
+                    publishQoS:
+                      type: string
                     publishTopics:
                       items:
                         type: string
                       type: array
+                    subscribeQoS:
+                      type: string
                     subscribeTopics:
                       items:
                         type: string
                       type: array
                   required:
-                  - instanceCount
+                  - clientCount
                   type: object
                 type: array
+              connectionLimitPerSecond:
+                type: integer
+              enableTls:
+                type: boolean
+              hostName:
+                type: string
               namePrefix:
                 type: string
+              port:
+                type: integer
               protocol:
                 type: string
-              targetType:
-                type: string
+              sendingLimitPerSecond:
+                type: integer
             required:
             - clientConfigs
+            - connectionLimitPerSecond
+            - enableTls
+            - hostName
             - namePrefix
+            - port
             - protocol
-            - targetType
+            - sendingLimitPerSecond
             type: object
           status:
             description: MqttClientStatus defines the observed state of MqttClient
+            properties:
+              simulationPods:
+                items:
+                  properties:
+                    clientCount:
+                      type: integer
+                    clientModelId:
+                      type: string
+                    connectionLimitAllocatedPerSecond:
+                      type: integer
+                    messageSendPerHourPerClientAllocated:
+                      type: integer
+                    messageSendPerHourPerClientRequested:
+                      type: integer
+                    publishQoS:
+                      type: string
+                    publishTopics:
+                      items:
+                        type: string
+                      type: array
+                    simulationPodId:
+                      type: string
+                    subscribeQoS:
+                      type: string
+                    subscribeTopics:
+                      items:
+                        type: string
+                      type: array
+                  required:
+                  - clientCount
+                  - simulationPodId
+                  type: object
+                type: array
+            required:
+            - simulationPods
             type: object
         type: object
     served: true
