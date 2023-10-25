@@ -9,4 +9,52 @@ metadata:
     app.kubernetes.io/created-by: orca-mqtt-client
   name: mqttclient-sample
 spec:
-  # TODO(user): Add fields here
+  namePrefix: mqtt-test
+  hostName: 10.9.0.4
+  port: 1883 # TODO set default value
+  connectionLimitPerSecond: 1000 # TODO set default value
+  sendingLimitPerSecond: 6000 # TODO set default value
+  protocol: V311
+  enableTls: false # TODO set default value
+  clientConfigs:
+    - clientCount: 218
+      publishQoS: AtLeastOnce # TODO set default value
+      clientModelId: test-model
+      messagePerHourPerClient: 3600
+      publishTopics:
+        - /test/topic1/message
+        - /test/topic2/message
+    - clientCount: 5
+      subscribeQoS: AtLeastOnce # TODO set default value
+      subscribeTopics:
+        - /test/topic1/message
+        - /test/topic2/message
+# status:
+#   simulationPods:
+#     - clientCount: 100
+#       clientModelId: test-model
+#       publishQoS: AtLeastOnce
+#       publishTopics:
+#         - /test/topic1/message
+#         - /test/topic2/message
+#       simulationPodId: "0"
+#     - clientCount: 100
+#       clientModelId: test-model
+#       publishQoS: AtLeastOnce
+#       publishTopics:
+#         - /test/topic1/message
+#         - /test/topic2/message
+#       simulationPodId: "1"
+#     - clientCount: 18
+#       clientModelId: test-model
+#       publishQoS: AtLeastOnce
+#       publishTopics:
+#         - /test/topic1/message
+#         - /test/topic2/message
+#       simulationPodId: "2"
+#     - clientCount: 5
+#       simulationPodId: "3"
+#       subscribeQoS: AtLeastOnce
+#       subscribeTopics:
+#         - /test/topic1/message
+#         - /test/topic2/message
