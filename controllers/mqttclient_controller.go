@@ -91,7 +91,7 @@ func (r *MqttClientReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		return ctrl.Result{}, err
 	}
 
-	statefulSetName := mqttClient.ObjectMeta.Name
+	statefulSetName := mqttClient.Spec.Id
 	existingStatefulSet := &appsv1.StatefulSet{}
 	ssNamespacedName := types.NamespacedName{
 		Name:      statefulSetName,
@@ -188,7 +188,7 @@ func (r *MqttClientReconciler) SetupWithManager(mgr ctrl.Manager) error {
 
 func (r *MqttClientReconciler) finalizeMqttClient(ctx context.Context, req ctrl.Request, mqttClient *orcav1beta1.MqttClient) error {
 	logger := log.FromContext(ctx)
-	mqttClientNamePrefix := mqttClient.ObjectMeta.Name
+	mqttClientNamePrefix := mqttClient.Spec.Id
 
 	statefulSetList := &appsv1.StatefulSetList{}
 	opts := []client.ListOption{

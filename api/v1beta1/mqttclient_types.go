@@ -49,6 +49,7 @@ type SimulationPod struct {
 
 // MqttClientSpec defines the desired state of MqttClient
 type MqttClientSpec struct {
+	Id                       string         `json:"id"`
 	HostName                 string         `json:"hostName"`
 	Port                     int            `json:"port"`
 	Protocol                 string         `json:"protocol"`

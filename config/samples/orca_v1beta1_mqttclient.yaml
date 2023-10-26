@@ -9,6 +9,7 @@ metadata:
     app.kubernetes.io/created-by: orca-mqtt-client
   name: mqttclient-sample
 spec:
+  id: mqttclient-sample
   hostName: 10.9.0.4
   port: 1883 # TODO set default value
   connectionLimitPerSecond: 1000 # TODO set default value
