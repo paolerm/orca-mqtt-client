@@ -28,10 +28,10 @@ type ClientConfig struct {
 	MessagePerHourPerClient int      `json:"messagePerHourPerClient,omitempty"`
 	PublishTopics           []string `json:"publishTopics,omitempty"`
 	SubscribeTopics         []string `json:"subscribeTopics,omitempty"`
-	MinCpuRequests			int		 `json:"minCpuRequests,omitempty"`
-	MinMemoryRequests		int		 `json:"minMemoryRequests,omitempty"`
-	MaxCpuLimits			int		 `json:"maxCpuLimits,omitempty"`
-	MaxMemoryLimits			int		 `json:"maxMemoryLimits,omitempty"`
+	MinCpuRequests          int      `json:"minCpuRequests,omitempty"`
+	MinMemoryRequests       int      `json:"minMemoryRequests,omitempty"`
+	MaxCpuLimits            int      `json:"maxCpuLimits,omitempty"`
+	MaxMemoryLimits         int      `json:"maxMemoryLimits,omitempty"`
 }
 
 type SimulationPod struct {
@@ -49,7 +49,6 @@ type SimulationPod struct {
 
 // MqttClientSpec defines the desired state of MqttClient
 type MqttClientSpec struct {
-	NamePrefix               string         `json:"namePrefix"`
 	HostName                 string         `json:"hostName"`
 	Port                     int            `json:"port"`
 	Protocol                 string         `json:"protocol"`

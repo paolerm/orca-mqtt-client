@@ -74,8 +74,6 @@ spec:
                 type: boolean
               hostName:
                 type: string
-              namePrefix:
-                type: string
               port:
                 type: integer
               protocol:
@@ -87,7 +85,6 @@ spec:
             - connectionLimitPerSecond
             - enableTls
             - hostName
-            - namePrefix
             - port
             - protocol
             - sendingLimitPerSecond
