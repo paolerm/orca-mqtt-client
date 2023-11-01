@@ -42,9 +42,9 @@ type SimulationPod struct {
 	SubscribeQoS                         string   `json:"subscribeQoS,omitempty"`
 	PublishTopics                        []string `json:"publishTopics,omitempty"`
 	SubscribeTopics                      []string `json:"subscribeTopics,omitempty"`
-	ConnectionLimitAllocatedPerSecond    int      `json:"connectionLimitAllocatedPerSecond,omitempty"`    // TODO float usage is highly discouraged, as support for them varies across languages. Is int ok?
-	MessageSendPerHourPerClientRequested int      `json:"messageSendPerHourPerClientRequested,omitempty"` // TODO float usage is highly discouraged, as support for them varies across languages. Is int ok?
-	MessageSendPerHourPerClientAllocated int      `json:"messageSendPerHourPerClientAllocated,omitempty"` // TODO float usage is highly discouraged, as support for them varies across languages. Is int ok?
+	ConnectionLimitAllocatedPerSecond    string   `json:"connectionLimitAllocatedPerSecond,omitempty"`    // TODO float usage is highly discouraged, as support for them varies across languages. Is int ok?
+	MessageSendPerHourPerClientRequested string   `json:"messageSendPerHourPerClientRequested,omitempty"` // TODO float usage is highly discouraged, as support for them varies across languages. Is int ok?
+	MessageSendPerHourPerClientAllocated string   `json:"messageSendPerHourPerClientAllocated,omitempty"` // TODO float usage is highly discouraged, as support for them varies across languages. Is int ok?
 }
 
 // MqttClientSpec defines the desired state of MqttClient

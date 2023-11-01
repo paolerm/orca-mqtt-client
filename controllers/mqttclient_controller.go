@@ -248,7 +248,7 @@ func setupStatus(spec orcav1beta1.MqttClientSpec) orcav1beta1.MqttClientStatus {
 	// TODO calculate ConnectionLimitAllocatedPerSecond and MessageSendPerHourPerClientAllocated
 	simulationPods := []orcav1beta1.SimulationPod{}
 
-	// totalClients, totalSenderClients := calculateTotalClients(spec.ClientConfigs)
+	totalClients, totalSenderClients := calculateTotalClients(spec.ClientConfigs)
 
 	simulationPodId := 0
 	for i := 0; i < len(spec.ClientConfigs); i++ {
@@ -263,9 +263,7 @@ func setupStatus(spec orcav1beta1.MqttClientSpec) orcav1beta1.MqttClientStatus {
 				SubscribeQoS:                         clientConfig.SubscribeQoS,
 				PublishTopics:                        clientConfig.PublishTopics,
 				SubscribeTopics:                      clientConfig.SubscribeTopics,
-				ConnectionLimitAllocatedPerSecond:    0,
-				MessageSendPerHourPerClientRequested: clientConfig.MessagePerHourPerClient,
-				MessageSendPerHourPerClientAllocated: 0,
+				MessageSendPerHourPerClientRequested: strconv.Itoa(clientConfig.MessagePerHourPerClient),
 			}
 
 			if totalRemaining <= maxMqttClientPerPods {
@@ -274,6 +272,11 @@ func setupStatus(spec orcav1beta1.MqttClientSpec) orcav1beta1.MqttClientStatus {
 			} else {
 				simulationPod.ClientCount = maxMqttClientPerPods
 				totalRemaining = totalRemaining - maxMqttClientPerPods
+			}
+
+			simulationPod.ConnectionLimitAllocatedPerSecond = strconv.FormatFloat((float64(spec.ConnectionLimitPerSecond)*float64(simulationPod.ClientCount))/float64(totalClients), 'f', -1, 64)
+			if simulationPod.PublishTopics != nil && len(simulationPod.PublishTopics) > 0 {
+				simulationPod.MessageSendPerHourPerClientAllocated = strconv.FormatFloat((float64(spec.SendingLimitPerSecond)*float64(simulationPod.ClientCount))/float64(totalSenderClients), 'f', -1, 64)
 			}
 
 			simulationPods = append(simulationPods, simulationPod)
@@ -290,6 +293,15 @@ func setupStatus(spec orcav1beta1.MqttClientSpec) orcav1beta1.MqttClientStatus {
 
 func calculateTotalClients(clientConfigs []orcav1beta1.ClientConfig) (int, int) {
 	var totalClients, totalSenderClients = 0, 0
+
+	for i := 0; i < len(clientConfigs); i++ {
+		totalClients = totalClients + clientConfigs[i].ClientCount
+
+		// a sender client is a client with publish topics defined
+		if clientConfigs[i].PublishTopics != nil && len(clientConfigs[i].PublishTopics) > 0 {
+			totalSenderClients = totalSenderClients + clientConfigs[i].ClientCount
+		}
+	}
 
 	return totalClients, totalSenderClients
 }

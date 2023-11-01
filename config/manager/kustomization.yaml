@@ -5,4 +5,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: paerminiacrplayground.azurecr.io/orca-mqtt-client
-  newTag: v1.2.1
+  newTag: v1.2.2

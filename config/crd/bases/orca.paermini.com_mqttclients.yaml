@@ -106,11 +106,11 @@ spec:
                     clientModelId:
                       type: string
                     connectionLimitAllocatedPerSecond:
-                      type: integer
+                      type: string
                     messageSendPerHourPerClientAllocated:
-                      type: integer
+                      type: string
                     messageSendPerHourPerClientRequested:
-                      type: integer
+                      type: string
                     publishQoS:
                       type: string
                     publishTopics:
