@@ -134,7 +134,7 @@ func (r *MqttClientReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 						Containers: []apiv1.Container{
 							{
 								Name:            statefulSetName,
-								Image:           "paerminiacrplayground.azurecr.io/hello-world:latest", // TODO: custom image
+								Image:           mqttClient.Spec.ClientImageId,
 								ImagePullPolicy: "Always",
 								Env: []apiv1.EnvVar{
 									{Name: "MQTT_CR_GROUP", Value: orcav1beta1.GroupVersion.Group},
@@ -223,8 +223,10 @@ func (r *MqttClientReconciler) finalizeMqttClient(ctx context.Context, req ctrl.
 }
 
 func setupStatus(spec orcav1beta1.MqttClientSpec) orcav1beta1.MqttClientStatus {
-	// TODO calculate ConnectionLimitAllocatedPerSecond, MessageSendPerHourPerClientRequested and MessageSendPerHourPerClientAllocated
+	// TODO calculate ConnectionLimitAllocatedPerSecond and MessageSendPerHourPerClientAllocated
 	simulationPods := []orcav1beta1.SimulationPod{}
+
+	// totalClients, totalSenderClients := calculateTotalClients(spec.ClientConfigs)
 
 	simulationPodId := 0
 	for i := 0; i < len(spec.ClientConfigs); i++ {
@@ -233,12 +235,15 @@ func setupStatus(spec orcav1beta1.MqttClientSpec) orcav1beta1.MqttClientStatus {
 		totalRemaining := clientConfig.ClientCount
 		for totalRemaining > 0 {
 			simulationPod := orcav1beta1.SimulationPod{
-				SimulationPodId: strconv.Itoa(simulationPodId),
-				ClientModelId:   clientConfig.ClientModelId,
-				PublishQoS:      clientConfig.PublishQoS,
-				SubscribeQoS:    clientConfig.SubscribeQoS,
-				PublishTopics:   clientConfig.PublishTopics,
-				SubscribeTopics: clientConfig.SubscribeTopics,
+				SimulationPodId:                      strconv.Itoa(simulationPodId),
+				ClientModelId:                        clientConfig.ClientModelId,
+				PublishQoS:                           clientConfig.PublishQoS,
+				SubscribeQoS:                         clientConfig.SubscribeQoS,
+				PublishTopics:                        clientConfig.PublishTopics,
+				SubscribeTopics:                      clientConfig.SubscribeTopics,
+				ConnectionLimitAllocatedPerSecond:    0,
+				MessageSendPerHourPerClientRequested: clientConfig.MessagePerHourPerClient,
+				MessageSendPerHourPerClientAllocated: 0,
 			}
 
 			if totalRemaining <= maxMqttClientPerPods {
@@ -259,4 +264,10 @@ func setupStatus(spec orcav1beta1.MqttClientSpec) orcav1beta1.MqttClientStatus {
 	}
 
 	return result
+}
+
+func calculateTotalClients(clientConfigs []orcav1beta1.ClientConfig) (int, int) {
+	var totalClients, totalSenderClients = 0, 0
+
+	return totalClients, totalSenderClients
 }

@@ -68,6 +68,8 @@ spec:
                   - clientCount
                   type: object
                 type: array
+              clientImageId:
+                type: string
               connectionLimitPerSecond:
                 type: integer
               enableTls:
@@ -84,6 +86,7 @@ spec:
                 type: integer
             required:
             - clientConfigs
+            - clientImageId
             - connectionLimitPerSecond
             - enableTls
             - hostName
