@@ -165,7 +165,29 @@ func (r *MqttClientReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		}
 	} else {
 		logger.Info("Updating statefulSet under namespace " + existingStatefulSet.ObjectMeta.Namespace + " and name " + existingStatefulSet.ObjectMeta.Name + "...")
-		// TODO: update obj
+
+		// TODO: refactor and avoid copy/paste
+		existingStatefulSet.Spec.Template.Spec.Containers = []apiv1.Container{
+			{
+				Name:            statefulSetName,
+				Image:           mqttClient.Spec.ClientImageId,
+				ImagePullPolicy: "Always",
+				Env: []apiv1.EnvVar{
+					{Name: "MQTT_CR_GROUP", Value: orcav1beta1.GroupVersion.Group},
+					{Name: "MQTT_CR_VERSION", Value: orcav1beta1.GroupVersion.Version},
+					{Name: "MQTT_CR_NAMESPACE", Value: mqttClient.ObjectMeta.Namespace},
+					{Name: "MQTT_CR_PLURAL", Value: "mqttclients"}, // TODO: better way to get plural?
+					{Name: "MQTT_CR_NAME", Value: mqttClient.ObjectMeta.Name},
+				}, // TODO
+				// Resources: {},
+				// VolumeMounts: {},
+				// LivenessProbe: {}.
+				// ReadinessProbe: {},
+				// TerminationMessagePath: {},
+				// TerminationMessagePolicy: File,
+			},
+		}
+
 		err = r.Update(ctx, existingStatefulSet)
 		if err != nil {
 			logger.Error(err, "Failed to update statefulSet under namespace "+existingStatefulSet.ObjectMeta.Namespace+" and name "+existingStatefulSet.ObjectMeta.Name+"...")
