@@ -19,6 +19,10 @@ package controllers
 import (
 	"context"
 
+	"bytes"
+	"crypto/sha256"
+	"encoding/gob"
+	"github.com/google/uuid"
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -84,7 +88,8 @@ func (r *MqttClientReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	}
 
 	// setup status section
-	mqttClient.Status = setupStatus(mqttClient.Spec)
+	mqttClient.Status = setupStatus(ctx, mqttClient.Spec)
+
 	err = r.Status().Update(ctx, mqttClient)
 	if err != nil {
 		logger.Error(err, "Failed to update CR!")
@@ -244,8 +249,8 @@ func (r *MqttClientReconciler) finalizeMqttClient(ctx context.Context, req ctrl.
 	return nil
 }
 
-func setupStatus(spec orcav1beta1.MqttClientSpec) orcav1beta1.MqttClientStatus {
-	// TODO calculate ConnectionLimitAllocatedPerSecond and MessageSendPerHourPerClientAllocated
+func setupStatus(ctx context.Context, spec orcav1beta1.MqttClientSpec) orcav1beta1.MqttClientStatus {
+	logger := log.FromContext(ctx)
 	simulationPods := []orcav1beta1.SimulationPod{}
 
 	totalClients, totalSenderClients := calculateTotalClients(spec.ClientConfigs)
@@ -284,8 +289,24 @@ func setupStatus(spec orcav1beta1.MqttClientSpec) orcav1beta1.MqttClientStatus {
 		}
 	}
 
+	// Generate a UUID from spec content.
+
+	var buffer bytes.Buffer
+	enc := gob.NewEncoder(&buffer)
+	err := enc.Encode(spec)
+	if err != nil {
+		logger.Error(err, "Failed to encode spec section!")
+	}
+
+	hash := sha256.Sum256(buffer.Bytes())
+	uuid, err := uuid.FromBytes(hash[:16])
+	if err != nil {
+		logger.Error(err, "Failed to generate GUID from bytes!")
+	}
+
 	result := orcav1beta1.MqttClientStatus{
 		SimulationPods: simulationPods,
+		RunId:          uuid.String(),
 	}
 
 	return result

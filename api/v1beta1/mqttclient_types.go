@@ -63,6 +63,7 @@ type MqttClientSpec struct {
 // MqttClientStatus defines the observed state of MqttClient
 type MqttClientStatus struct {
 	SimulationPods []SimulationPod `json:"simulationPods"`
+	RunId          string          `json:"runId"`
 }
 
 //+kubebuilder:object:root=true

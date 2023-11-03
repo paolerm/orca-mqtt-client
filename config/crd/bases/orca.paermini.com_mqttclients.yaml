@@ -98,6 +98,8 @@ spec:
           status:
             description: MqttClientStatus defines the observed state of MqttClient
             properties:
+              runId:
+                type: string
               simulationPods:
                 items:
                   properties:
@@ -131,6 +133,7 @@ spec:
                   type: object
                 type: array
             required:
+            - runId
             - simulationPods
             type: object
         type: object
