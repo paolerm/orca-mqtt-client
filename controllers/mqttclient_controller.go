@@ -142,11 +142,11 @@ func (r *MqttClientReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 								Image:           mqttClient.Spec.ClientImageId,
 								ImagePullPolicy: "Always",
 								Env: []apiv1.EnvVar{
-									{Name: "MQTT_CR_GROUP", Value: orcav1beta1.GroupVersion.Group},
-									{Name: "MQTT_CR_VERSION", Value: orcav1beta1.GroupVersion.Version},
-									{Name: "MQTT_CR_NAMESPACE", Value: mqttClient.ObjectMeta.Namespace},
-									{Name: "MQTT_CR_PLURAL", Value: "mqttclients"}, // TODO: better way to get plural?
-									{Name: "MQTT_CR_NAME", Value: mqttClient.ObjectMeta.Name},
+									{Name: "CR_GROUP", Value: orcav1beta1.GroupVersion.Group},
+									{Name: "CR_VERSION", Value: orcav1beta1.GroupVersion.Version},
+									{Name: "CR_NAMESPACE", Value: mqttClient.ObjectMeta.Namespace},
+									{Name: "CR_PLURAL", Value: "mqttclients"}, // TODO: better way to get plural?
+									{Name: "CR_NAME", Value: mqttClient.ObjectMeta.Name},
 								}, // TODO
 								// Resources: {},
 								// VolumeMounts: {},
