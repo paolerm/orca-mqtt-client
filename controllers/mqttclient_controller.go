@@ -89,6 +89,7 @@ func (r *MqttClientReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 
 	// setup status section
 	mqttClient.Status = setupStatus(ctx, mqttClient.Spec)
+	replicas := int32(len(mqttClient.Status.SimulationPods))
 
 	err = r.Status().Update(ctx, mqttClient)
 	if err != nil {
@@ -116,6 +117,7 @@ func (r *MqttClientReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 				},
 			},
 			Spec: appsv1.StatefulSetSpec{
+				Replicas: &replicas,
 				Selector: &metav1.LabelSelector{
 					MatchLabels: map[string]string{
 						"simulation": statefulSetName,
@@ -147,6 +149,13 @@ func (r *MqttClientReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 									{Name: "CR_NAMESPACE", Value: mqttClient.ObjectMeta.Namespace},
 									{Name: "CR_PLURAL", Value: "mqttclients"}, // TODO: better way to get plural?
 									{Name: "CR_NAME", Value: mqttClient.ObjectMeta.Name},
+									{Name: "SIMULATION_ID", Value: statefulSetName},
+									{
+										Name: "SIMULATION_POD_ID",
+										ValueFrom: &apiv1.EnvVarSource{
+											FieldRef: &apiv1.ObjectFieldSelector{APIVersion: "v1", FieldPath: "metadata.name"},
+										},
+									},
 								}, // TODO
 								// Resources: {},
 								// VolumeMounts: {},
@@ -178,11 +187,18 @@ func (r *MqttClientReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 				Image:           mqttClient.Spec.ClientImageId,
 				ImagePullPolicy: "Always",
 				Env: []apiv1.EnvVar{
-					{Name: "MQTT_CR_GROUP", Value: orcav1beta1.GroupVersion.Group},
-					{Name: "MQTT_CR_VERSION", Value: orcav1beta1.GroupVersion.Version},
-					{Name: "MQTT_CR_NAMESPACE", Value: mqttClient.ObjectMeta.Namespace},
-					{Name: "MQTT_CR_PLURAL", Value: "mqttclients"}, // TODO: better way to get plural?
-					{Name: "MQTT_CR_NAME", Value: mqttClient.ObjectMeta.Name},
+					{Name: "CR_GROUP", Value: orcav1beta1.GroupVersion.Group},
+					{Name: "CR_VERSION", Value: orcav1beta1.GroupVersion.Version},
+					{Name: "CR_NAMESPACE", Value: mqttClient.ObjectMeta.Namespace},
+					{Name: "CR_PLURAL", Value: "mqttclients"}, // TODO: better way to get plural?
+					{Name: "CR_NAME", Value: mqttClient.ObjectMeta.Name},
+					{Name: "SIMULATION_ID", Value: statefulSetName},
+					{
+						Name: "SIMULATION_POD_ID",
+						ValueFrom: &apiv1.EnvVarSource{
+							FieldRef: &apiv1.ObjectFieldSelector{APIVersion: "v1", FieldPath: "metadata.name"},
+						},
+					},
 				}, // TODO
 				// Resources: {},
 				// VolumeMounts: {},
