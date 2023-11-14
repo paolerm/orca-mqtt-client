@@ -45,6 +45,7 @@ type MqttClientReconciler struct {
 
 const mqttClientFinalizer = "paermini.com/mqtt-client-finalizer"
 const maxMqttClientPerPods = 100
+const acrSecret = "acr-secret"
 
 //+kubebuilder:rbac:groups=orca.paermini.com,resources=mqttclients,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=orca.paermini.com,resources=mqttclients/status,verbs=get;update;patch
@@ -135,8 +136,7 @@ func (r *MqttClientReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 					},
 					Spec: apiv1.PodSpec{
 						ImagePullSecrets: []apiv1.LocalObjectReference{
-							{Name: "docker-secret"},
-							{Name: "cdpx-acr-secret"},
+							{Name: acrSecret},
 						},
 						Containers: []apiv1.Container{
 							{
